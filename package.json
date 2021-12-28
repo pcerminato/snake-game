@@ -2,8 +2,11 @@
   "name": "snake-game",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./dist/index.js",
   "scripts": {
+    "start": "tsc && node dist/index.js",
+    "dev": "nodemon tsc && node dist/index.js",
+    "lint": "eslint ./src --ext .ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -16,5 +19,13 @@
   "bugs": {
     "url": "https://github.com/pcerminato/snake-game/issues"
   },
-  "homepage": "https://github.com/pcerminato/snake-game#readme"
+  "homepage": "https://github.com/pcerminato/snake-game#readme",
+  "devDependencies": {
+    "@types/node": "^17.0.5",
+    "@typescript-eslint/eslint-plugin": "^5.8.1",
+    "@typescript-eslint/parser": "^5.8.1",
+    "eslint": "^8.5.0",
+    "nodemon": "^2.0.15",
+    "typescript": "^4.5.4"
+  }
 }
