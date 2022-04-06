@@ -1,0 +1,11 @@
+#canvas {
+  width: 500px;
+  height: 300px;
+  border: 5px solid black;
+  box-sizing: content-box;
+  position: relative;
+}
+
+* {
+  box-sizing: border-box;
+}
