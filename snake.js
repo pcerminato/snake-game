@@ -10,7 +10,7 @@ const SNAKE_SPEED = 200;
 
 let _stopGame = false;
 
-function createElementId (x, y) {
+function createElementId(x, y) {
   return `x${x}y${y}`;
 }
 
@@ -24,11 +24,11 @@ function createPixel(atRow, atCol, id) {
   pixel.style.width = PIXEL + "px";
   pixel.style.height = PIXEL + "px";
   pixel.style.backgroundColor = "white";
-  
+
   if (id) {
     pixel.id = id;
   }
-  
+
   return pixel;
 }
 
@@ -43,7 +43,7 @@ function renderBoard() {
   }
 }
 
-function changePixelColor (pixelAxis, color) {
+function changePixelColor(pixelAxis, color) {
   const [row, col] = pixelAxis;
   const elementId = createElementId(row, col);
   const pixel = document.getElementById(elementId);
@@ -51,17 +51,17 @@ function changePixelColor (pixelAxis, color) {
   pixel.style.backgroundColor = color;
 }
 
-function clearPixels (pixels=[[]]) {
-  for (let z = 0;  z < pixels.length; z++) {
+function clearPixels(pixels = [[]]) {
+  for (let z = 0; z < pixels.length; z++) {
     changePixelColor(pixels[z], "white");
   }
 }
 
-function renderSnake(snakePosition = [], tail=[]) {
+function renderSnake(snakePosition = [], tail = []) {
   clearPixels([tail]);
 
   for (let m = 0; m < snakePosition.length; m++) {
-    changePixelColor(snakePosition[m], "#000")
+    changePixelColor(snakePosition[m], "#000");
   }
 }
 
@@ -83,17 +83,17 @@ function getKeyDirection(event) {
     default:
       return undefined;
   }
-};
+}
 
 let currentDirection = RIGHT;
 let currentSnakePosition = [
-  [0, 0],//tail
+  [0, 0], //tail
   [0, 1],
   [0, 2],
   [0, 3],
   [0, 4],
   [0, 5],
-  [0, 6],// head
+  [0, 6], // head
 ];
 
 // when changing the direction, what changes is the head
@@ -102,51 +102,62 @@ let currentSnakePosition = [
 function getNextStep(direction, snakePosition) {
   // create a new array from the original but without the first element (the snake's tail).
   const newSnakePosition = snakePosition.slice(1, snakePosition.length);
-  const currentHead = snakePosition[snakePosition.length-1];
-  let newHead = [ ...currentHead ];
+  const currentHead = snakePosition[snakePosition.length - 1];
+  let newHead = [...currentHead];
 
   if (direction === RIGHT) {
-    newHead = [currentHead[0], currentHead[1]+1];
+    newHead = [currentHead[0], currentHead[1] + 1];
   }
 
   if (direction === LEFT) {
-    newHead = [currentHead[0], currentHead[1]-1];
+    newHead = [currentHead[0], currentHead[1] - 1];
   }
 
   if (direction === UP) {
-    newHead = [currentHead[0]-1, currentHead[1]];
+    newHead = [currentHead[0] - 1, currentHead[1]];
   }
 
   if (direction === DOWN) {
-    newHead = [currentHead[0]+1, currentHead[1]];
+    newHead = [currentHead[0] + 1, currentHead[1]];
   }
 
-  return [ ...newSnakePosition, newHead ];
+  return [...newSnakePosition, newHead];
 }
 
 function makeNextStep() {
-
-  const newSnakePosition = getNextStep(
-    currentDirection, 
-    currentSnakePosition
-  );
+  const newSnakePosition = getNextStep(currentDirection, currentSnakePosition);
 
   const tail = currentSnakePosition[0];
 
   currentSnakePosition = newSnakePosition;
-  
+
   renderSnake(currentSnakePosition, tail);
 
   if (!_stopGame) {
     setTimeout(makeNextStep, SNAKE_SPEED);
   }
-  
 }
 
+function areSelfExcludingDirs(currentDir, newDir) {
+  return !(
+    (currentDir === RIGHT && newDir !== LEFT) ||
+    (currentDir === LEFT && newDir !== RIGHT) ||
+    (currentDir === UP && newDir !== DOWN) ||
+    (currentDir === DOWN && newDir !== UP)
+  );
+}
 
-window.addEventListener("keypress", function(e) {
-  currentDirection = getKeyDirection(e);
+//--- Game flow >>>
+
+window.addEventListener("keypress", function (e) {
+  const newDir = getKeyDirection(e);
+
+  // The opposite direction of the current one is not allowed
+  if (!areSelfExcludingDirs(currentDirection, newDir)) {
+    currentDirection = newDir;
+  }
 });
 
 renderBoard(currentSnakePosition);
+
 setTimeout(makeNextStep, SNAKE_SPEED);
