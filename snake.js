@@ -85,8 +85,9 @@ function getKeyDirection(event) {
   }
 }
 
+let isGameOver = false;
 let currentDirection = RIGHT;
-let currentSnakePosition = [
+const currentSnakePosition = [
   [0, 0], //tail
   [0, 1],
   [0, 2],
@@ -124,17 +125,33 @@ function getNextStep(direction, snakePosition) {
   return [...newSnakePosition, newHead];
 }
 
-function makeNextStep() {
+function snakeIsOutOfTheBoard(snakePosition) {
+  let isOut = false;
+
+  if (snakePosition.length) {
+    const head = snakePosition[snakePosition.length - 1];
+
+    const [row, col] = head;
+
+    isOut = row < 0 || row >= ROWS || col < 0 || col >= COLS;
+  }
+
+  return isOut;
+}
+
+function makeNextStep(currentSnakePosition) {
   const newSnakePosition = getNextStep(currentDirection, currentSnakePosition);
 
   const tail = currentSnakePosition[0];
 
-  currentSnakePosition = newSnakePosition;
+  if (!snakeIsOutOfTheBoard(newSnakePosition)) {
+    renderSnake(newSnakePosition, tail);
 
-  renderSnake(currentSnakePosition, tail);
-
-  if (!_stopGame) {
-    setTimeout(makeNextStep, SNAKE_SPEED);
+    if (!_stopGame) {
+      setTimeout(() => makeNextStep(newSnakePosition), SNAKE_SPEED);
+    }
+  } else {
+    isGameOver = true;
   }
 }
 
@@ -158,6 +175,6 @@ window.addEventListener("keypress", function (e) {
   }
 });
 
-renderBoard(currentSnakePosition);
+renderBoard();
 
-setTimeout(makeNextStep, SNAKE_SPEED);
+setTimeout(() => makeNextStep(currentSnakePosition), SNAKE_SPEED);
